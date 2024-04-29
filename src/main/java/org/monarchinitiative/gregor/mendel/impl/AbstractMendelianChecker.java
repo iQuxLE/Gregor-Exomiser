@@ -1,6 +1,5 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.monarchinitiative.gregor.mendel.GenotypeCalls;
 import org.monarchinitiative.gregor.mendel.IncompatiblePedigreeException;
 import org.monarchinitiative.gregor.mendel.MendelianInheritanceChecker;
@@ -8,6 +7,7 @@ import org.monarchinitiative.gregor.pedigree.Pedigree;
 import org.monarchinitiative.gregor.pedigree.PedigreeQueryDecorator;
 
 import java.util.Collection;
+import java.util.List;
 
 // TODO: check compatibility of pedigree with GenotypeCalls
 
@@ -41,10 +41,10 @@ public abstract class AbstractMendelianChecker {
 	 * Filter list of {@link GenotypeCalls} for fitting to mode
 	 *
 	 * @param calls The list of calls to check for compatibility
-	 * @return Filtered {@link ImmutableList} of {@link GenotypeCalls} objects, subset of <code>calls</code>
+	 * @return Filtered {@link List} of {@link GenotypeCalls} objects, subset of <code>calls</code>
 	 * @throws IncompatiblePedigreeException if <code>calls</code> is incompatible with the pedigree
 	 */
-	public abstract ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
+	public abstract List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
 		throws IncompatiblePedigreeException;
 
 }

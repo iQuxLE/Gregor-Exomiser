@@ -1,9 +1,10 @@
 package org.monarchinitiative.gregor.mendel;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 public class GenotypeCallsBuilderTest {
 
@@ -16,7 +17,7 @@ public class GenotypeCallsBuilderTest {
 		GenotypeCallsBuilder builder = new GenotypeCallsBuilder();
 		builder.setPayload(1);
 		builder.setChromType(ChromosomeType.AUTOSOMAL);
-		builder.getSampleToGenotype().put("example", new Genotype(ImmutableList.of(0, 1)));
+		builder.getSampleToGenotype().put("example", new Genotype(List.of(0, 1)));
 
 		GenotypeCalls calls = builder.build();
 

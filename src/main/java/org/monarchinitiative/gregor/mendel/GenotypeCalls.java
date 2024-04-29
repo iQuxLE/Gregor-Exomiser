@@ -1,9 +1,6 @@
 package org.monarchinitiative.gregor.mendel;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSortedMap;
-
-import java.util.Iterator;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -20,7 +17,7 @@ import java.util.Map.Entry;
  */
 public final class GenotypeCalls implements Iterable<Entry<String, Genotype>> {
 
-	private final static Genotype GT_NO_CALL = new Genotype(ImmutableList.of(Genotype.NO_CALL));
+	private final static Genotype GT_NO_CALL = new Genotype(List.of(Genotype.NO_CALL));
 
 	/**
 	 * Type of the chromosome that the variant lies on (autosomal, X-chromosomal, etc.)
@@ -29,11 +26,11 @@ public final class GenotypeCalls implements Iterable<Entry<String, Genotype>> {
 	/**
 	 * Mapping from sample name to {@link Genotype}
 	 */
-	private final ImmutableSortedMap<String, Genotype> sampleToGenotype;
+	private final Map<String, Genotype> sampleToGenotype;
 	/**
 	 * List of sample names
 	 */
-	private final ImmutableList<String> sampleNames;
+	private final List<String> sampleNames;
 	/**
 	 * A payload object for later easier reidentification
 	 */
@@ -61,8 +58,12 @@ public final class GenotypeCalls implements Iterable<Entry<String, Genotype>> {
 	public GenotypeCalls(ChromosomeType chromType, Iterable<? extends Entry<String, Genotype>> sampleToGenotype,
 						 Object payload) {
 		this.chromType = chromType;
-		this.sampleToGenotype = ImmutableSortedMap.copyOf(sampleToGenotype);
-		this.sampleNames = ImmutableList.copyOf(this.sampleToGenotype.keySet());
+
+		this.sampleToGenotype = new TreeMap<>();
+		for (Entry<String, Genotype> entry : sampleToGenotype){
+			this.sampleToGenotype.put(entry.getKey(), entry.getValue());
+		}
+		this.sampleNames = List.copyOf(this.sampleToGenotype.keySet());
 		this.payload = payload;
 	}
 
@@ -105,14 +106,14 @@ public final class GenotypeCalls implements Iterable<Entry<String, Genotype>> {
 	/**
 	 * @return Sample to genotype map
 	 */
-	public ImmutableSortedMap<String, Genotype> getSampleToGenotype() {
-		return sampleToGenotype;
+	public Map<String, Genotype> getSampleToGenotype() {
+		return Collections.unmodifiableMap(sampleToGenotype);
 	}
 
 	/**
 	 * @return Sample names
 	 */
-	public ImmutableList<String> getSampleNames() {
+	public List<String> getSampleNames() {
 		return sampleNames;
 	}
 

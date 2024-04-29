@@ -1,13 +1,10 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.monarchinitiative.gregor.mendel.GenotypeCalls;
 import org.monarchinitiative.gregor.mendel.IncompatiblePedigreeException;
 import org.monarchinitiative.gregor.mendel.MendelianInheritanceChecker;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.stream.Collectors;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -34,14 +31,12 @@ public class MendelianCheckerAR extends AbstractMendelianChecker {
 	}
 
 	@Override
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
 		throws IncompatiblePedigreeException {
 		// Apply homozygous and compound heterozygous checker, then select distinct records
 		Stream<GenotypeCalls> joint = Stream.concat(checkerCompound.filterCompatibleRecords(calls).stream(),
 			checkerHom.filterCompatibleRecords(calls).stream());
-		HashSet<GenotypeCalls> set = new HashSet<>();
-		set.addAll(joint.collect(Collectors.toList()));
-		return ImmutableList.copyOf(set);
+		return joint.distinct().toList();
 	}
 
 }

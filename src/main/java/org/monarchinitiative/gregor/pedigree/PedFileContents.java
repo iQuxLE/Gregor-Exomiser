@@ -1,7 +1,9 @@
 package org.monarchinitiative.gregor.pedigree;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the contents of a pedigree file.
@@ -13,46 +15,47 @@ public class PedFileContents {
 	/**
 	 * headers for extra columns (column 7 and beyond)
 	 */
-	private final ImmutableList<String> extraColumnHeaders;
+	private final List<String> extraColumnHeaders;
 
 	/**
 	 * the individuals in the PED file
 	 */
-	private final ImmutableList<PedPerson> individuals;
+	private final List<PedPerson> individuals;
 
 	/**
 	 * mapping of name to PedPerson
 	 */
-	private final ImmutableMap<String, PedPerson> nameToPerson; // TODO(holtgrew): Test this!
+	private final Map<String, PedPerson> nameToPerson; // TODO(holtgrew): Test this!
 
-	public PedFileContents(ImmutableList<String> extraColumnHeaders, ImmutableList<PedPerson> individuals) {
+	public PedFileContents(List<String> extraColumnHeaders, List<PedPerson> individuals) {
 		this.extraColumnHeaders = extraColumnHeaders;
 		this.individuals = individuals;
 
-		ImmutableMap.Builder<String, PedPerson> builder = new ImmutableMap.Builder<String, PedPerson>();
+		Map<String, PedPerson> map = new LinkedHashMap<>();
 		for (PedPerson p : individuals)
-			builder.put(p.getName(), p);
-		this.nameToPerson = builder.build();
+			map.put(p.getName(), p);
+		this.nameToPerson = Collections.unmodifiableMap(map);
 	}
+
 
 	/**
 	 * @return headers for extra columns (column 7 and beyond)
 	 */
-	public ImmutableList<String> getExtraColumnHeaders() {
-		return extraColumnHeaders;
+	public List<String> getExtraColumnHeaders() {
+		return Collections.unmodifiableList(extraColumnHeaders);
 	}
 
 	/**
 	 * @return the individuals in the PED file
 	 */
-	public ImmutableList<PedPerson> getIndividuals() {
-		return individuals;
+	public List<PedPerson> getIndividuals() {
+		return Collections.unmodifiableList(individuals);
 	}
 
 	/**
 	 * @return mapping of name to PedPerson
 	 */
-	public ImmutableMap<String, PedPerson> getNameToPerson() {
+	public Map<String, PedPerson> getNameToPerson() {
 		return nameToPerson;
 	}
 

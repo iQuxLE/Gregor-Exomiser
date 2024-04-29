@@ -1,8 +1,9 @@
 package org.monarchinitiative.gregor.pedigree;
 
-import com.google.common.collect.ImmutableList;
-
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 // TODO(holtgrew): Test me!
 // TODO(holtgrew): Convenience class for parsing Pedigree files?
@@ -36,7 +37,7 @@ public class PedigreeExtractor {
 	 * @return list of {@link Person}s of the given pedigree
 	 * @throws PedParseException on problems with resolving names of individuals
 	 */
-	public ImmutableList<Person> run() throws PedParseException {
+	public List<Person> run() throws PedParseException {
 		// check that all linked-to mothers and fathers exist
 		for (PedPerson pedPerson : contents.getIndividuals()) {
 			if (!"0".equals(pedPerson.getFather()) && !contents.getNameToPerson().containsKey(pedPerson.getFather()))
@@ -47,16 +48,16 @@ public class PedigreeExtractor {
 
 		// construct all Person objects, we use a trick for the construction of immutable Person objects while still
 		// allowing potential cycles
-		ImmutableList.Builder<Person> builder = new ImmutableList.Builder<Person>();
+		List<Person> persons = new ArrayList<>();
 		HashMap<String, Person> existing = new HashMap<String, Person>();
 		for (PedPerson pedPerson : contents.getIndividuals())
 			if (pedPerson.getPedigree().equals(name)) {
 				if (existing.containsKey(pedPerson.getName()))
-					builder.add(existing.get(pedPerson.getName()));
+					persons.add(existing.get(pedPerson.getName()));
 				else
-					builder.add(new Person(pedPerson, contents, existing));
+					persons.add(new Person(pedPerson, contents, existing));
 			}
 
-		return builder.build();
+		return Collections.unmodifiableList(persons);
 	}
 }

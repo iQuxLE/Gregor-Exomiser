@@ -1,11 +1,8 @@
 package org.monarchinitiative.gregor.pedigree;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableList;
-
 import java.io.*;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // TODO(holtgrem): Test me!
 
@@ -51,7 +48,7 @@ public final class PedFileReader {
 		BufferedReader in = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 
 		// Parse header.
-		ImmutableList<String> extraHeaders = ImmutableList.of(); // default to empty
+		List<String> extraHeaders = List.of(); // default to empty
 		String line = in.readLine();
 		if (line != null && line.startsWith("#")) {
 			extraHeaders = parseHeader(line);
@@ -59,31 +56,27 @@ public final class PedFileReader {
 		}
 
 		// Parse individuals.
-		ImmutableList.Builder<PedPerson> individualBuilder = new ImmutableList.Builder<PedPerson>();
+		List<PedPerson> individuals = new ArrayList<PedPerson>();
 		while (line != null) {
 			line = line.trim(); // trim leading and trailing whitespace
 			if (line.length() != 0) // ignore empty lines
-				individualBuilder.add(readIndividual(line));
+				individuals.add(readIndividual(line));
 
 			line = in.readLine(); // read next
 		}
 
-		return new PedFileContents(extraHeaders, individualBuilder.build());
+		return new PedFileContents(extraHeaders, Collections.unmodifiableList(individuals));
 	}
 
 	/**
 	 * Parse header and return extra header fields, <code>line</code> must start with <code>'#'</code>.
 	 */
-	private static ImmutableList<String> parseHeader(String line) {
-		ImmutableList.Builder<String> extraHeaderBuilder = new ImmutableList.Builder<String>();
-		Iterator<String> it = Splitter.on('\t').split(line.trim().substring(1)).iterator();
-		for (int i = 0; it.hasNext(); ++i)
-			if (i < 6)
-				it.next();
-			else
-				extraHeaderBuilder.add(it.next());
-		return extraHeaderBuilder.build();
+	private static List<String> parseHeader(String line) {
+		return Arrays.stream(line.trim().substring(1).split("\t"))
+				.skip(6)
+				.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
+
 
 	/**
 	 * Parse individual from the given line.
@@ -92,23 +85,22 @@ public final class PedFileReader {
 	 */
 	private static PedPerson readIndividual(String line) throws PedParseException {
 		try {
-			Iterator<String> it = Splitter.onPattern("\\s+").split(line.trim()).iterator();
+			String[] fields = line.trim().split("\\s+");
+			if (fields.length < 6) {
+				throw new PedParseException("Insufficient number of fields in line: \"" + line + "\"");
+			}
 
-			// parse out core fields
-			String pedigree = it.next();
-			String name = it.next();
-			String father = it.next();
-			String mother = it.next();
-			String sex = it.next();
-			String disease = it.next();
+			String pedigree = fields[0];
+			String name = fields[1];
+			String father = fields[2];
+			String mother = fields[3];
+			String sex = fields[4];
+			String disease = fields[5];
 
-			// parse out extra fields
-			ImmutableList.Builder<String> extraFields = new ImmutableList.Builder<String>();
-			while (it.hasNext())
-				extraFields.add(it.next());
+			List<String> extraFields = new ArrayList<>(Arrays.asList(fields).subList(6, fields.length));
 
 			return new PedPerson(pedigree, name, father, mother, Sex.toSex(sex), Disease.toDisease(disease),
-				extraFields.build());
+					Collections.unmodifiableList(extraFields));
 		} catch (NoSuchElementException e) {
 			throw new PedParseException("Insufficient number of fields in line: \"" + line + "\"");
 		}

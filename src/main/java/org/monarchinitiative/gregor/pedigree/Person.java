@@ -1,10 +1,9 @@
 package org.monarchinitiative.gregor.pedigree;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * An individual from a pedigree file, Java programmer friendly version.
@@ -46,7 +45,7 @@ public final class Person {
 	/**
 	 * extra fields from the PED file
 	 */
-	private final ImmutableList<String> extraFields;
+	private final List<String> extraFields;
 
 	/**
 	 * Initialize object with the given values.
@@ -57,7 +56,7 @@ public final class Person {
 		this.mother = mother;
 		this.sex = sex;
 		this.disease = disease;
-		this.extraFields = ImmutableList.copyOf(extraFields);
+		this.extraFields = List.copyOf(extraFields);
 	}
 
 	/**
@@ -126,7 +125,7 @@ public final class Person {
 	/**
 	 * @return extra fields from the PED file
 	 */
-	public ImmutableList<String> getExtraFields() {
+	public List<String> getExtraFields() {
 		return extraFields;
 	}
 

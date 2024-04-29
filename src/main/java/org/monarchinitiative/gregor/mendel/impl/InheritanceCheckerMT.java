@@ -1,13 +1,12 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.monarchinitiative.gregor.mendel.*;
 import org.monarchinitiative.gregor.pedigree.Disease;
 import org.monarchinitiative.gregor.pedigree.Pedigree;
 import org.monarchinitiative.gregor.pedigree.Person;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -40,7 +39,7 @@ public class InheritanceCheckerMT extends AbstractMendelianChecker {
 	}
 
 	@Override
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
 		throws IncompatiblePedigreeException {
 
 		// Filter to calls on the mitochondrion
@@ -53,8 +52,7 @@ public class InheritanceCheckerMT extends AbstractMendelianChecker {
 			compatibleCalls = mitoCalls.filter(this::isCompatibleSingleton);
 		else
 			compatibleCalls = mitoCalls.filter(this::isCompatibleFamily);
-		return ImmutableList.copyOf(compatibleCalls.collect(Collectors.toList()));
-
+		return compatibleCalls.toList();
 	}
 
 	/**

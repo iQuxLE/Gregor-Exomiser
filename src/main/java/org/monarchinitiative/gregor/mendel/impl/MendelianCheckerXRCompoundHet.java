@@ -1,7 +1,5 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.monarchinitiative.gregor.mendel.*;
 import org.monarchinitiative.gregor.pedigree.Disease;
 import org.monarchinitiative.gregor.pedigree.Pedigree;
@@ -37,7 +35,7 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 	/**
 	 * list of siblings for each person in {@link #pedigree}
 	 */
-	private final ImmutableMap<Person, ImmutableList<Person>> siblings;
+	private final Map<Person, List<Person>> siblings;
 
 	public MendelianCheckerXRCompoundHet(MendelianInheritanceChecker parent) {
 		super(parent);
@@ -46,7 +44,7 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 	}
 
 	@Override
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
 		throws IncompatiblePedigreeException {
 		List<GenotypeCalls> xCalls = calls.stream().filter(call -> call.getChromType() == ChromosomeType.X_CHROMOSOMAL)
 			.collect(Collectors.toList());
@@ -57,14 +55,14 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 			return filterCompatibleRecordsMultiSample(xCalls);
 	}
 
-	private ImmutableList<GenotypeCalls> filterCompatibleRecordsSingleSample(Collection<GenotypeCalls> calls) {
+	private List<GenotypeCalls> filterCompatibleRecordsSingleSample(Collection<GenotypeCalls> calls) {
 		if (pedigree.getMembers().get(0).getSex() == Sex.MALE)
-			return ImmutableList.of();
+			return List.of();
 		else
 			return new MendelianCheckerARCompoundHet(parent).filterCompatibleRecordsSingleSample(calls);
 	}
 
-	private ImmutableList<GenotypeCalls> filterCompatibleRecordsMultiSample(Collection<GenotypeCalls> calls) {
+	private List<GenotypeCalls> filterCompatibleRecordsMultiSample(Collection<GenotypeCalls> calls) {
 		List<GenotypeCalls> autosomalCalls = calls.stream()
 			.filter(call -> call.getChromType() == ChromosomeType.AUTOSOMAL).collect(Collectors.toList());
 
@@ -82,7 +80,7 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 				}
 			}
 		}
-		return ImmutableList.copyOf(result);
+		return List.copyOf(result);
 	}
 
 	private ArrayList<Candidate> collectTrioCandidates(Collection<GenotypeCalls> calls) {

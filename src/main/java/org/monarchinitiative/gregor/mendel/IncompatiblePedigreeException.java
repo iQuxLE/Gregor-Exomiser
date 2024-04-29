@@ -1,8 +1,5 @@
 package org.monarchinitiative.gregor.mendel;
 
-
-import java.io.Serial;
-
 /**
  * Thrown when the pedigree does not fit to the {@link GenotypeCalls}
  *

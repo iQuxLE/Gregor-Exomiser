@@ -1,6 +1,5 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.monarchinitiative.gregor.mendel.ChromosomeType;
 import org.monarchinitiative.gregor.mendel.Genotype;
 import org.monarchinitiative.gregor.mendel.GenotypeCalls;
@@ -9,7 +8,7 @@ import org.monarchinitiative.gregor.pedigree.Disease;
 import org.monarchinitiative.gregor.pedigree.Person;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -32,7 +31,7 @@ public class MendelianCheckerAD extends AbstractMendelianChecker {
 	}
 
 	@Override
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls) {
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls) {
 		// Filter to calls on autosomal chromosomes
 		Stream<GenotypeCalls> autosomalCalls = calls.stream()
 			.filter(call -> call.getChromType() == ChromosomeType.AUTOSOMAL);
@@ -42,7 +41,7 @@ public class MendelianCheckerAD extends AbstractMendelianChecker {
 			compatibleCalls = autosomalCalls.filter(this::isCompatibleSingleton);
 		else
 			compatibleCalls = autosomalCalls.filter(this::isCompatibleFamily);
-		return ImmutableList.copyOf(compatibleCalls.collect(Collectors.toList()));
+		return compatibleCalls.toList();
 	}
 
 	/**

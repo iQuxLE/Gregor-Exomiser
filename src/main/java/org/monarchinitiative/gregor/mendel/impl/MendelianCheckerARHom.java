@@ -1,13 +1,15 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.monarchinitiative.gregor.mendel.*;
 import org.monarchinitiative.gregor.pedigree.Disease;
 import org.monarchinitiative.gregor.pedigree.Pedigree;
 import org.monarchinitiative.gregor.pedigree.Person;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,18 +37,15 @@ public class MendelianCheckerARHom extends AbstractMendelianChecker {
 	}
 
 	@Override
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
-		throws IncompatiblePedigreeException {
-		// Filter to calls on autosomal chromosomes
-		Stream<GenotypeCalls> autosomalCalls = calls.stream()
-			.filter(call -> call.getChromType() == ChromosomeType.AUTOSOMAL);
-		// Filter to calls compatible with AD inheritance
-		Stream<GenotypeCalls> compatibleCalls;
-		if (this.pedigree.getNMembers() == 1)
-			compatibleCalls = autosomalCalls.filter(this::isCompatibleSingleton);
-		else
-			compatibleCalls = autosomalCalls.filter(this::isCompatibleFamily);
-		return ImmutableList.copyOf(compatibleCalls.collect(Collectors.toList()));
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls) throws IncompatiblePedigreeException{
+		// Determine compatibility checking method based on the number of pedigree members
+		Predicate<GenotypeCalls> compatibilityChecker = (this.pedigree.getNMembers() == 1) ?
+				this::isCompatibleSingleton : this::isCompatibleFamily;
+		// Stream the calls, filter by chromosome type and compatibility
+		return calls.stream()
+				.filter(call -> call.getChromType() == ChromosomeType.AUTOSOMAL)
+				.filter(compatibilityChecker)
+				.toList();
 	}
 
 	/**
@@ -96,18 +95,18 @@ public class MendelianCheckerARHom extends AbstractMendelianChecker {
 	/**
 	 * @return names of unaffected parents of unaffecteds
 	 */
-	private ImmutableSet<String> getUnaffectedParentNamesOfAffecteds() {
-		ImmutableSet.Builder<String> builder = new ImmutableSet.Builder<String>();
+	private Set<String> getUnaffectedParentNamesOfAffecteds() {
+		Set<String> set = new HashSet<>();
 
 		for (Person person : pedigree.getMembers())
 			if (person.getDisease() == Disease.AFFECTED) {
 				if (person.getFather() != null && person.getFather().getDisease() == Disease.UNAFFECTED)
-					builder.add(person.getFather().getName());
+					set.add(person.getFather().getName());
 				if (person.getMother() != null && person.getMother().getDisease() == Disease.UNAFFECTED)
-					builder.add(person.getMother().getName());
+					set.add(person.getMother().getName());
 			}
 
-		return builder.build();
+		return set;
 	}
 
 	private boolean unaffectedsAreNotHomozygousAlt(GenotypeCalls calls) {

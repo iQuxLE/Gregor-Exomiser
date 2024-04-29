@@ -1,7 +1,5 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import org.monarchinitiative.gregor.mendel.*;
 import org.monarchinitiative.gregor.pedigree.Disease;
 import org.monarchinitiative.gregor.pedigree.Pedigree;
@@ -9,8 +7,10 @@ import org.monarchinitiative.gregor.pedigree.Person;
 import org.monarchinitiative.gregor.pedigree.Sex;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Helper class for checking a {@link GenotypeCalls} for compatibility with a
@@ -38,19 +38,16 @@ public class MendelianCheckerXRHom extends AbstractMendelianChecker {
 	}
 
 	@Override
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
 		throws IncompatiblePedigreeException {
-		// Filter to calls on X chromosome
-		Stream<GenotypeCalls> xCalls = calls.stream()
-			.filter(call -> call.getChromType() == ChromosomeType.X_CHROMOSOMAL);
-
-		// Filter to calls compatible with AD inheritance
-		Stream<GenotypeCalls> compatibleCalls;
-		if (this.pedigree.getNMembers() == 1)
-			compatibleCalls = xCalls.filter(this::isCompatibleSingleton);
-		else
-			compatibleCalls = xCalls.filter(this::isCompatibleFamily);
-		return ImmutableList.copyOf(compatibleCalls.collect(Collectors.toList()));
+		// Determine compatibility checking method based on the number of pedigree members
+		Predicate<GenotypeCalls> compatibilityChecker = (this.pedigree.getNMembers() == 1) ?
+				this::isCompatibleSingleton : this::isCompatibleFamily;
+		// Stream the calls, filter by chromosome type and compatibility
+		return calls.stream()
+				.filter(call -> call.getChromType() == ChromosomeType.X_CHROMOSOMAL)
+				.filter(compatibilityChecker)
+				.toList();
 	}
 
 	/**
@@ -114,7 +111,7 @@ public class MendelianCheckerXRHom extends AbstractMendelianChecker {
 	 * @return
 	 */
 	private boolean parentsAreCompatible(GenotypeCalls calls) {
-		final ImmutableSet<String> femaleParentNames = queryDecorator.getAffectedFemaleParentNames();
+		Set<String> femaleParentNames = Collections.unmodifiableSet(queryDecorator.getAffectedFemaleParentNames());
 
 		for (Person p : pedigree.getMembers()) {
 			final Genotype gt = calls.getGenotypeForSample(p.getName());
@@ -135,7 +132,7 @@ public class MendelianCheckerXRHom extends AbstractMendelianChecker {
 	}
 
 	private boolean unaffectedsAreCompatible(GenotypeCalls calls) {
-		final ImmutableSet<String> unaffectedNames = queryDecorator.getUnaffectedNames();
+		Set<String> unaffectedNames = Collections.unmodifiableSet(queryDecorator.getUnaffectedNames());
 
 		for (Person p : pedigree.getMembers()) {
 			if (unaffectedNames.contains(p.getName())) {

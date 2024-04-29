@@ -1,9 +1,8 @@
 package org.monarchinitiative.gregor.mendel;
 
-import com.google.common.collect.ImmutableList;
-
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Representation of a genotype in an individual
@@ -133,10 +132,12 @@ public class Genotype {
 	}
 
 	/**
-	 * @return {@link ImmutableList} of alleles in this genotype
+	 * @return {@link List} of alleles in this genotype
 	 */
-	public ImmutableList<Integer> getAlleleNumbers() {
-		return Arrays.stream(alleleNumbers).boxed().collect(ImmutableList.toImmutableList());
+	public List<Integer> getAlleleNumbers() {
+		return Arrays.stream(alleleNumbers)
+				.boxed()
+				.toList();
 	}
 
 	/**

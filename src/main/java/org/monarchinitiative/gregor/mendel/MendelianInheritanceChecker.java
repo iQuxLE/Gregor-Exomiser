@@ -1,14 +1,10 @@
 package org.monarchinitiative.gregor.mendel;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import org.monarchinitiative.gregor.mendel.impl.*;
 import org.monarchinitiative.gregor.pedigree.Pedigree;
 import org.monarchinitiative.gregor.pedigree.PedigreeQueryDecorator;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Facade class for checking lists of {@link GenotypeCalls} for compatibility with mendelian inheritance
@@ -28,7 +24,7 @@ public final class MendelianInheritanceChecker {
 	/**
 	 * Mendelian compatibility checker for each sub mode of inheritance
 	 */
-	final private ImmutableMap<SubModeOfInheritance, AbstractMendelianChecker> checkers;
+	final private Map<SubModeOfInheritance, AbstractMendelianChecker> checkers;
 
 	/**
 	 * Construct checker with the pedigree to use
@@ -39,15 +35,15 @@ public final class MendelianInheritanceChecker {
 		this.pedigree = pedigree;
 		this.queryPed = new PedigreeQueryDecorator(pedigree);
 
-		ImmutableMap.Builder<SubModeOfInheritance, AbstractMendelianChecker> builder = new ImmutableMap.Builder<>();
-		builder.put(SubModeOfInheritance.AUTOSOMAL_DOMINANT, new MendelianCheckerAD(this));
-		builder.put(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_COMP_HET, new MendelianCheckerARCompoundHet(this));
-		builder.put(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_HOM_ALT, new MendelianCheckerARHom(this));
-		builder.put(SubModeOfInheritance.X_DOMINANT, new MendelianCheckerXD(this));
-		builder.put(SubModeOfInheritance.X_RECESSIVE_COMP_HET, new MendelianCheckerXRCompoundHet(this));
-		builder.put(SubModeOfInheritance.X_RECESSIVE_HOM_ALT, new MendelianCheckerXRHom(this));
-		builder.put(SubModeOfInheritance.MITOCHONDRIAL, new InheritanceCheckerMT(this));
-		this.checkers = builder.build();
+		Map<SubModeOfInheritance, AbstractMendelianChecker> map = new LinkedHashMap<>();
+		map.put(SubModeOfInheritance.AUTOSOMAL_DOMINANT, new MendelianCheckerAD(this));
+		map.put(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_COMP_HET, new MendelianCheckerARCompoundHet(this));
+		map.put(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_HOM_ALT, new MendelianCheckerARHom(this));
+		map.put(SubModeOfInheritance.X_DOMINANT, new MendelianCheckerXD(this));
+		map.put(SubModeOfInheritance.X_RECESSIVE_COMP_HET, new MendelianCheckerXRCompoundHet(this));
+		map.put(SubModeOfInheritance.X_RECESSIVE_HOM_ALT, new MendelianCheckerXRHom(this));
+		map.put(SubModeOfInheritance.MITOCHONDRIAL, new InheritanceCheckerMT(this));
+		this.checkers = map;
 	}
 
 	/**
@@ -61,26 +57,26 @@ public final class MendelianInheritanceChecker {
 	 * {@link GenotypeCalls} from <code>list</code>
 	 * @throws IncompatiblePedigreeException if the individuals in <code>calls</code> do not fit to the pedigree
 	 */
-	public ImmutableMap<ModeOfInheritance, ImmutableList<GenotypeCalls>> checkMendelianInheritance(
+	public Map<ModeOfInheritance, List<GenotypeCalls>> checkMendelianInheritance(
 		Collection<GenotypeCalls> calls, Collection<GenotypeCalls> recessiveCalls) throws IncompatiblePedigreeException {
-		ImmutableMap.Builder<ModeOfInheritance, ImmutableList<GenotypeCalls>> builder = new ImmutableMap.Builder<>();
+		Map<ModeOfInheritance, List<GenotypeCalls>> map = new LinkedHashMap<>();
 		for (ModeOfInheritance mode : ModeOfInheritance.values()) {
 			if (mode == ModeOfInheritance.ANY) {
-				builder.put(mode, ImmutableList.copyOf(calls));
+				map.put(mode, List.copyOf(calls));
 			} else {
 				if (mode == ModeOfInheritance.AUTOSOMAL_RECESSIVE || mode == ModeOfInheritance.X_RECESSIVE) {
-					builder.put(mode, filterCompatibleRecords(recessiveCalls, mode));
+					map.put(mode, filterCompatibleRecords(recessiveCalls, mode));
 				} else {
-					builder.put(mode, filterCompatibleRecords(calls, mode));
+					map.put(mode, filterCompatibleRecords(calls, mode));
 				}
 			}
 		}
-		return builder.build();
+		return map;
 	}
 
-	public ImmutableMap<ModeOfInheritance, ImmutableList<GenotypeCalls>> checkMendelianInheritance(
+	public Map<ModeOfInheritance, List<GenotypeCalls>> checkMendelianInheritance(
 		Collection<GenotypeCalls> calls) throws IncompatiblePedigreeException {
-		return checkMendelianInheritance(calls, calls);
+		return Collections.unmodifiableMap(checkMendelianInheritance(calls, calls));
 	}
 
 
@@ -94,26 +90,26 @@ public final class MendelianInheritanceChecker {
 	 * {@link GenotypeCalls} from <code>list</code>
 	 * @throws IncompatiblePedigreeException if the individuals in <code>calls</code> do not fit to the pedigree
 	 */
-	public ImmutableMap<SubModeOfInheritance, ImmutableList<GenotypeCalls>> checkMendelianInheritanceSub(
+	public Map<SubModeOfInheritance, List<GenotypeCalls>> checkMendelianInheritanceSub(
 		Collection<GenotypeCalls> calls, Collection<GenotypeCalls> compHetRecessiveCalls) throws IncompatiblePedigreeException {
-		ImmutableMap.Builder<SubModeOfInheritance, ImmutableList<GenotypeCalls>> builder = new ImmutableMap.Builder<>();
+		Map<SubModeOfInheritance, List<GenotypeCalls>> map = new LinkedHashMap<>();
 		for (SubModeOfInheritance mode : SubModeOfInheritance.values()) {
 			if (mode == SubModeOfInheritance.ANY) {
-				builder.put(mode, ImmutableList.copyOf(calls));
+				map.put(mode, List.copyOf(calls));
 			} else {
 				if (mode == SubModeOfInheritance.AUTOSOMAL_RECESSIVE_COMP_HET || mode == SubModeOfInheritance.X_RECESSIVE_COMP_HET) {
-					builder.put(mode, filterCompatibleRecordsSub(compHetRecessiveCalls, mode));
+					map.put(mode, filterCompatibleRecordsSub(compHetRecessiveCalls, mode));
 				} else {
-					builder.put(mode, filterCompatibleRecordsSub(calls, mode));
+					map.put(mode, filterCompatibleRecordsSub(calls, mode));
 				}
 			}
 		}
-		return builder.build();
+		return map;
 	}
 
-	public ImmutableMap<SubModeOfInheritance, ImmutableList<GenotypeCalls>> checkMendelianInheritanceSub(
+	public Map<SubModeOfInheritance, List<GenotypeCalls>> checkMendelianInheritanceSub(
 		Collection<GenotypeCalls> calls) throws IncompatiblePedigreeException {
-		return checkMendelianInheritanceSub(calls, calls);
+		return Collections.unmodifiableMap(checkMendelianInheritanceSub(calls, calls));
 	}
 
 	/**
@@ -124,45 +120,41 @@ public final class MendelianInheritanceChecker {
 	 * @return List of {@link GenotypeCalls} from <code>calls</code> that are compatible with <code>mode</code>
 	 * @throws IncompatiblePedigreeException if the individuals in <code>calls</code> do not fit to the pedigree
 	 */
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls, ModeOfInheritance mode)
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls, ModeOfInheritance mode)
 		throws IncompatiblePedigreeException {
 		// Check for compatibility of calls with pedigree
 		if (!calls.stream().allMatch(c -> isCompatibleWithPedigree(c)))
 			throw new IncompatiblePedigreeException("GenotypeCalls not compatible with pedigree");
 		// Filter down to the compatible records
-		ImmutableSet<GenotypeCalls> calls1;
-		ImmutableSet<GenotypeCalls> calls2;
-		ImmutableList.Builder<GenotypeCalls> builder;
+		Set<GenotypeCalls> calls1;
+		Set<GenotypeCalls> calls2;
+		List<GenotypeCalls> result;
 		switch (mode) {
 			case AUTOSOMAL_DOMINANT:
-				return checkers.get(SubModeOfInheritance.AUTOSOMAL_DOMINANT).filterCompatibleRecords(calls);
+				return Collections.unmodifiableList(checkers.get(SubModeOfInheritance.AUTOSOMAL_DOMINANT).filterCompatibleRecords(calls));
 			case AUTOSOMAL_RECESSIVE:
-				calls1 = ImmutableSet.copyOf(
-					checkers.get(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_HOM_ALT).filterCompatibleRecords(calls));
-				calls2 = ImmutableSet.copyOf(
-					checkers.get(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_COMP_HET).filterCompatibleRecords(calls));
-				builder = new ImmutableList.Builder<>();
+				calls1 = new HashSet<>(checkers.get(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_HOM_ALT).filterCompatibleRecords(calls));
+				calls2 = new HashSet<>(checkers.get(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_COMP_HET).filterCompatibleRecords(calls));
+				result = new ArrayList<>();
 				for (GenotypeCalls c : calls)
 					if (calls1.contains(c) || calls2.contains(c))
-						builder.add(c);
-				return builder.build();
+						result.add(c);
+				return Collections.unmodifiableList(result);
 			case X_DOMINANT:
-				return checkers.get(SubModeOfInheritance.X_DOMINANT).filterCompatibleRecords(calls);
+				return Collections.unmodifiableList(checkers.get(SubModeOfInheritance.X_DOMINANT).filterCompatibleRecords(calls));
 			case X_RECESSIVE:
-				calls1 = ImmutableSet
-					.copyOf(checkers.get(SubModeOfInheritance.X_RECESSIVE_HOM_ALT).filterCompatibleRecords(calls));
-				calls2 = ImmutableSet
-					.copyOf(checkers.get(SubModeOfInheritance.X_RECESSIVE_COMP_HET).filterCompatibleRecords(calls));
-				builder = new ImmutableList.Builder<>();
+				calls1 = new HashSet<>(checkers.get(SubModeOfInheritance.X_RECESSIVE_HOM_ALT).filterCompatibleRecords(calls));
+				calls2 = new HashSet<>(checkers.get(SubModeOfInheritance.X_RECESSIVE_COMP_HET).filterCompatibleRecords(calls));
+				result = new ArrayList<>();
 				for (GenotypeCalls c : calls)
 					if (calls1.contains(c) || calls2.contains(c))
-						builder.add(c);
-				return builder.build();
+						result.add(c);
+				return Collections.unmodifiableList(result);
 			case MITOCHONDRIAL:
-				return checkers.get(SubModeOfInheritance.MITOCHONDRIAL).filterCompatibleRecords(calls);
+				return Collections.unmodifiableList(checkers.get(SubModeOfInheritance.MITOCHONDRIAL).filterCompatibleRecords(calls));
 			default:
 			case ANY:
-				return ImmutableList.copyOf(calls);
+				return List.copyOf(calls);
 		}
 	}
 
@@ -174,14 +166,14 @@ public final class MendelianInheritanceChecker {
 	 * @return List of {@link GenotypeCalls} from <code>calls</code> that are compatible with <code>mode</code>
 	 * @throws IncompatiblePedigreeException if the individuals in <code>calls</code> do not fit to the pedigree
 	 */
-	public ImmutableList<GenotypeCalls> filterCompatibleRecordsSub(Collection<GenotypeCalls> calls,
+	public List<GenotypeCalls> filterCompatibleRecordsSub(Collection<GenotypeCalls> calls,
 																   SubModeOfInheritance subMode) throws IncompatiblePedigreeException {
 		// Check for compatibility of calls with pedigree
 		if (!calls.stream().allMatch(c -> isCompatibleWithPedigree(c)))
 			throw new IncompatiblePedigreeException("GenotypeCalls not compatible with pedigree");
 		// Filter down to the compatible records
 		if (subMode == SubModeOfInheritance.ANY)
-			return ImmutableList.copyOf(calls);
+			return List.copyOf(calls);
 		else
 			return checkers.get(subMode).filterCompatibleRecords(calls);
 	}

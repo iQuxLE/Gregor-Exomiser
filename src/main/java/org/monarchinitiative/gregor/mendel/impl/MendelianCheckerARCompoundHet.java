@@ -1,7 +1,5 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.monarchinitiative.gregor.mendel.*;
 import org.monarchinitiative.gregor.pedigree.Disease;
 import org.monarchinitiative.gregor.pedigree.Pedigree;
@@ -9,6 +7,7 @@ import org.monarchinitiative.gregor.pedigree.Person;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // TODO: also return no-call/not-observed variant
 
@@ -29,7 +28,7 @@ public class MendelianCheckerARCompoundHet extends AbstractMendelianChecker {
 	/**
 	 * list of siblings for each person in {@link #pedigree}
 	 */
-	private final ImmutableMap<Person, ImmutableList<Person>> siblings;
+	private final Map<Person, List<Person>> siblings;
 
 	public MendelianCheckerARCompoundHet(MendelianInheritanceChecker parent) {
 		super(parent);
@@ -42,35 +41,34 @@ public class MendelianCheckerARCompoundHet extends AbstractMendelianChecker {
 	 * @return Genotypes for all variants that are compatible with autosomal recessive compound heterozygous inheritance.
 	 */
 	@Override
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls)
 		throws IncompatiblePedigreeException {
 		List<GenotypeCalls> autosomalCalls = calls.stream()
-			.filter(call -> call.getChromType() == ChromosomeType.AUTOSOMAL).collect(Collectors.toList());
-		if (pedigree.getNMembers() == 1)
-			return filterCompatibleRecordsSingleSample(autosomalCalls);
-		else
-			return filterCompatibleRecordsMultiSample(autosomalCalls);
+				.filter(call -> call.getChromType() == ChromosomeType.AUTOSOMAL)
+				.collect(Collectors.toList());
+		return pedigree.getNMembers() == 1 ?
+				filterCompatibleRecordsSingleSample(autosomalCalls) :
+				filterCompatibleRecordsMultiSample(autosomalCalls);
 	}
 
 	/**
 	 * In the single sample case, if we find two or more heterozygous variants, then there is compatibility with
 	 * autosomal recessive compound heterozygous inheritance.
 	 */
-	ImmutableList<GenotypeCalls> filterCompatibleRecordsSingleSample(Collection<GenotypeCalls> calls) {
-		ImmutableList.Builder<GenotypeCalls> builder = new ImmutableList.Builder<>();
+	List<GenotypeCalls> filterCompatibleRecordsSingleSample(Collection<GenotypeCalls> calls) {
+		List<GenotypeCalls> builder = new ArrayList<>();
 		for (GenotypeCalls gc : calls) {
 			if (gc.getGenotypeBySampleNo(0).isHet())
 				builder.add(gc);
 		}
 
-		ImmutableList<GenotypeCalls> result = builder.build();
-		if (result.size() > 1)
-			return result;
+		if (builder.size() > 1)
+			return builder;
 		else
-			return ImmutableList.of();
+			return List.of();
 	}
 
-	private ImmutableList<GenotypeCalls> filterCompatibleRecordsMultiSample(Collection<GenotypeCalls> calls) {
+	private List<GenotypeCalls> filterCompatibleRecordsMultiSample(Collection<GenotypeCalls> calls) {
 		// First, collect candidate genotype call lists from trios around affected individuals
 		ArrayList<Candidate> candidates = collectTrioCandidates(calls);
 
@@ -85,7 +83,7 @@ public class MendelianCheckerARCompoundHet extends AbstractMendelianChecker {
 				}
 			}
 		}
-		return ImmutableList.copyOf(result);
+		return List.copyOf(result);
 	}
 
 	private boolean isCompatibleWithUnaffected(Candidate c) {

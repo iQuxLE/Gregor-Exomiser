@@ -1,6 +1,5 @@
 package org.monarchinitiative.gregor.mendel.impl;
 
-import com.google.common.collect.ImmutableList;
 import org.monarchinitiative.gregor.mendel.ChromosomeType;
 import org.monarchinitiative.gregor.mendel.Genotype;
 import org.monarchinitiative.gregor.mendel.GenotypeCalls;
@@ -10,8 +9,8 @@ import org.monarchinitiative.gregor.pedigree.Person;
 import org.monarchinitiative.gregor.pedigree.Sex;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Implementation of Mendelian compatibility check for autosomal dominant case
@@ -31,17 +30,15 @@ public class MendelianCheckerXD extends AbstractMendelianChecker {
 	}
 
 	@Override
-	public ImmutableList<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls) {
-		// Filter to calls on X chromosomes
-		Stream<GenotypeCalls> xCalls = calls.stream()
-			.filter(call -> call.getChromType() == ChromosomeType.X_CHROMOSOMAL);
-		// Filter to calls compatible with AD inheritance
-		Stream<GenotypeCalls> compatibleCalls;
-		if (this.pedigree.getNMembers() == 1)
-			compatibleCalls = xCalls.filter(this::isCompatibleSingleton);
-		else
-			compatibleCalls = xCalls.filter(this::isCompatibleFamily);
-		return ImmutableList.copyOf(compatibleCalls.collect(Collectors.toList()));
+	public List<GenotypeCalls> filterCompatibleRecords(Collection<GenotypeCalls> calls) {
+		// Determine compatibility checking method based on the number of pedigree members
+		Predicate<GenotypeCalls> compatibilityChecker = (this.pedigree.getNMembers() == 1) ?
+				this::isCompatibleSingleton : this::isCompatibleFamily;
+		// Stream the calls, filter by chromosome type and compatibility
+		return calls.stream()
+				.filter(call -> call.getChromType() == ChromosomeType.X_CHROMOSOMAL)
+				.filter(compatibilityChecker)
+				.toList();
 	}
 
 	/**
