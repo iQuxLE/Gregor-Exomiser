@@ -1,9 +1,9 @@
 package org.monarchinitiative.gregor.mendel;
 
-import com.google.common.collect.ImmutableList;
 import org.monarchinitiative.gregor.pedigree.Pedigree;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,35 +42,35 @@ public class MendelianCompatibilityCheckerTestBase {
 	protected final SimpleGenotype ALT = SimpleGenotype.ALT;
 	protected final SimpleGenotype UKN = SimpleGenotype.UKN;
 
-	protected ImmutableList<String> names;
+	protected List<String> names;
 	protected Pedigree pedigree;
 
 	/**
 	 * @return a {@link com.google.common.collect.ImmutableList} object.
 	 */
-	protected ImmutableList<SimpleGenotype> lst(SimpleGenotype... gts) {
-		ImmutableList.Builder<SimpleGenotype> builder = new ImmutableList.Builder<SimpleGenotype>();
+	protected List<SimpleGenotype> lst(SimpleGenotype... gts) {
+		List<SimpleGenotype> genotypes = new ArrayList<>();
 		for (int i = 0; i < gts.length; ++i)
-			builder.add(gts[i]);
-		return builder.build();
+			genotypes.add(gts[i]);
+		return Collections.unmodifiableList(genotypes);
 	}
 
-	protected List<GenotypeCalls> getGenotypeCallsList(ImmutableList<SimpleGenotype> genotypes,
+	protected List<GenotypeCalls> getGenotypeCallsList(List<SimpleGenotype> genotypes,
 													   ChromosomeType chromosomeType) {
 		HashMap<String, Genotype> entries = new HashMap<String, Genotype>();
 		for (int i = 0; i < names.size(); ++i) {
 			switch (genotypes.get(i)) {
 				case HET:
-					entries.put(names.get(i), new Genotype(ImmutableList.of(Genotype.REF_CALL, 1)));
+					entries.put(names.get(i), new Genotype(List.of(Genotype.REF_CALL, 1)));
 					break;
 				case REF:
-					entries.put(names.get(i), new Genotype(ImmutableList.of(Genotype.REF_CALL, Genotype.REF_CALL)));
+					entries.put(names.get(i), new Genotype(List.of(Genotype.REF_CALL, Genotype.REF_CALL)));
 					break;
 				case ALT:
-					entries.put(names.get(i), new Genotype(ImmutableList.of(1, 1)));
+					entries.put(names.get(i), new Genotype(List.of(1, 1)));
 					break;
 				case UKN:
-					entries.put(names.get(i), new Genotype(ImmutableList.of(Genotype.NO_CALL, Genotype.NO_CALL)));
+					entries.put(names.get(i), new Genotype(List.of(Genotype.NO_CALL, Genotype.NO_CALL)));
 					break;
 			}
 		}
@@ -81,25 +81,25 @@ public class MendelianCompatibilityCheckerTestBase {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected List<GenotypeCalls> getGenotypeCallsList(ImmutableList<SimpleGenotype> genotypes1,
-													   ImmutableList<SimpleGenotype> genotypes2, ChromosomeType chromosomeType) {
+	protected List<GenotypeCalls> getGenotypeCallsList(List<SimpleGenotype> genotypes1,
+													   List<SimpleGenotype> genotypes2, ChromosomeType chromosomeType) {
 		List<GenotypeCalls> gcs = new ArrayList<GenotypeCalls>();
 		for (Object obj : new Object[]{genotypes1, genotypes2}) {
-			ImmutableList<SimpleGenotype> genotypes = (ImmutableList<SimpleGenotype>) obj;
+			List<SimpleGenotype> genotypes = (List<SimpleGenotype>) obj;
 			HashMap<String, Genotype> entries = new HashMap<String, Genotype>();
 			for (int i = 0; i < names.size(); ++i) {
 				switch (genotypes.get(i)) {
 					case HET:
-						entries.put(names.get(i), new Genotype(ImmutableList.of(Genotype.REF_CALL, 1)));
+						entries.put(names.get(i), new Genotype(List.of(Genotype.REF_CALL, 1)));
 						break;
 					case REF:
-						entries.put(names.get(i), new Genotype(ImmutableList.of(Genotype.REF_CALL, Genotype.REF_CALL)));
+						entries.put(names.get(i), new Genotype(List.of(Genotype.REF_CALL, Genotype.REF_CALL)));
 						break;
 					case ALT:
-						entries.put(names.get(i), new Genotype(ImmutableList.of(1, 1)));
+						entries.put(names.get(i), new Genotype(List.of(1, 1)));
 						break;
 					case UKN:
-						entries.put(names.get(i), new Genotype(ImmutableList.of(Genotype.NO_CALL, Genotype.NO_CALL)));
+						entries.put(names.get(i), new Genotype(List.of(Genotype.NO_CALL, Genotype.NO_CALL)));
 						break;
 				}
 			}

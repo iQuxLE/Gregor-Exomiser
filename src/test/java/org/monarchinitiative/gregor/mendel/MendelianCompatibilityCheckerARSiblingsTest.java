@@ -1,30 +1,32 @@
 package org.monarchinitiative.gregor.mendel;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.monarchinitiative.gregor.pedigree.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MendelianCompatibilityCheckerARSiblingsTest extends MendelianCompatibilityCheckerTestBase {
 
 	MendelianInheritanceChecker checker;
 	List<GenotypeCalls> gcList;
-	ImmutableMap<ModeOfInheritance, ImmutableList<GenotypeCalls>> result;
+	Map<ModeOfInheritance, List<GenotypeCalls>> result;
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		ImmutableList.Builder<PedPerson> individuals = new ImmutableList.Builder<PedPerson>();
-		individuals.add(new PedPerson("ped", "I.1", "0", "0", Sex.MALE, Disease.AFFECTED)); // child 1
-		individuals.add(new PedPerson("ped", "I.2", "0", "0", Sex.FEMALE, Disease.AFFECTED)); // child 2
-		PedFileContents pedFileContents = new PedFileContents(new ImmutableList.Builder<String>().build(),
-			individuals.build());
+		List<PedPerson> individuals = List.of(
+			new PedPerson("ped", "I.1", "0", "0", Sex.MALE, Disease.AFFECTED), // child 1
+			new PedPerson("ped", "I.2", "0", "0", Sex.FEMALE, Disease.AFFECTED) // child 2
+		);
+		PedFileContents pedFileContents = new PedFileContents(List.of(),
+			individuals);
 		this.pedigree = new Pedigree(pedFileContents, "ped");
 
-		this.names = ImmutableList.of("I.1", "I.2");
+		this.names = List.of("I.1", "I.2");
 
 		this.checker = new MendelianInheritanceChecker(this.pedigree);
 

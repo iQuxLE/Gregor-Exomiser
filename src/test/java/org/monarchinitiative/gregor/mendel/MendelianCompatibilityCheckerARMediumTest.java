@@ -1,37 +1,37 @@
 package org.monarchinitiative.gregor.mendel;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.monarchinitiative.gregor.pedigree.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 public class MendelianCompatibilityCheckerARMediumTest extends MendelianCompatibilityCheckerTestBase {
 
 	MendelianInheritanceChecker checker;
 	List<GenotypeCalls> gcList;
-	ImmutableMap<ModeOfInheritance, ImmutableList<GenotypeCalls>> result;
+	Map<ModeOfInheritance, List<GenotypeCalls>> result;
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		ImmutableList.Builder<PedPerson> individuals = new ImmutableList.Builder<PedPerson>();
-		individuals.add(new PedPerson("ped", "I.1", "0", "0", Sex.MALE, Disease.UNAFFECTED)); // grandgrandfather
-		individuals.add(new PedPerson("ped", "I.2", "0", "0", Sex.FEMALE, Disease.UNAFFECTED)); // grandgrandmother
-		individuals.add(new PedPerson("ped", "II.1", "0", "0", Sex.FEMALE, Disease.UNAFFECTED)); // grandmother1
-		individuals.add(new PedPerson("ped", "II.2", "I.1", "I.2", Sex.MALE, Disease.UNAFFECTED)); // grandfather1
-		individuals.add(new PedPerson("ped", "II.3", "I.1", "I.2", Sex.FEMALE, Disease.UNAFFECTED)); // grandmother2
-		individuals.add(new PedPerson("ped", "II.4", "0", "0", Sex.MALE, Disease.UNAFFECTED)); // grandfather2
-		individuals.add(new PedPerson("ped", "III.1", "II.1", "II.2", Sex.MALE, Disease.UNAFFECTED)); // father
-		individuals.add(new PedPerson("ped", "III.2", "II.3", "II.4", Sex.FEMALE, Disease.UNAFFECTED)); // mother
-		individuals.add(new PedPerson("ped", "IV.1", "III.1", "III.2", Sex.FEMALE, Disease.AFFECTED)); // child
-		PedFileContents pedFileContents = new PedFileContents(new ImmutableList.Builder<String>().build(),
-			individuals.build());
+		List<PedPerson> individuals = List.of(
+			new PedPerson("ped", "I.1", "0", "0", Sex.MALE, Disease.UNAFFECTED), // grandgrandfather
+			new PedPerson("ped", "I.2", "0", "0", Sex.FEMALE, Disease.UNAFFECTED), // grandgrandmother
+			new PedPerson("ped", "II.1", "0", "0", Sex.FEMALE, Disease.UNAFFECTED), // grandmother1
+			new PedPerson("ped", "II.2", "I.1", "I.2", Sex.MALE, Disease.UNAFFECTED), // grandfather1
+			new PedPerson("ped", "II.3", "I.1", "I.2", Sex.FEMALE, Disease.UNAFFECTED), // grandmother2
+			new PedPerson("ped", "II.4", "0", "0", Sex.MALE, Disease.UNAFFECTED), // grandfather2
+			new PedPerson("ped", "III.1", "II.1", "II.2", Sex.MALE, Disease.UNAFFECTED), // father
+			new PedPerson("ped", "III.2", "II.3", "II.4", Sex.FEMALE, Disease.UNAFFECTED), // mother
+			new PedPerson("ped", "IV.1", "III.1", "III.2", Sex.FEMALE, Disease.AFFECTED) // child
+		);
+		PedFileContents pedFileContents = new PedFileContents(List.of(),
+			individuals);
 		this.pedigree = new Pedigree(pedFileContents, "ped");
 
-		this.names = ImmutableList.of("I.1", "I.2", "II.1", "II.2", "II.3", "II.4", "III.1", "III.2", "IV.1");
+		this.names = List.of("I.1", "I.2", "II.1", "II.2", "II.3", "II.4", "III.1", "III.2", "IV.1");
 
 		this.checker = new MendelianInheritanceChecker(this.pedigree);
 

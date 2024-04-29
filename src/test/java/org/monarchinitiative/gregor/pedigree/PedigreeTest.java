@@ -1,9 +1,11 @@
 package org.monarchinitiative.gregor.pedigree;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unit tests for the {@link Pedigree} class.
@@ -16,13 +18,14 @@ public class PedigreeTest {
 
 	@BeforeEach
 	public void setUp() {
-		ImmutableList.Builder<PedPerson> individuals = new ImmutableList.Builder<PedPerson>();
-		individuals.add(new PedPerson("fam", "father", "0", "0", Sex.MALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "mother", "0", "0", Sex.FEMALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "son", "father", "mother", Sex.MALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "daughter", "father", "mother", Sex.FEMALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam2", "other", "0", "0", Sex.FEMALE, Disease.UNKNOWN));
-		this.pedFileContents = new PedFileContents(new ImmutableList.Builder<String>().build(), individuals.build());
+		List<PedPerson> individuals = List.of(
+			new PedPerson("fam", "father", "0", "0", Sex.MALE, Disease.UNKNOWN),
+			new PedPerson("fam", "mother", "0", "0", Sex.FEMALE, Disease.UNKNOWN),
+			new PedPerson("fam", "son", "father", "mother", Sex.MALE, Disease.UNKNOWN),
+			new PedPerson("fam", "daughter", "father", "mother", Sex.FEMALE, Disease.UNKNOWN),
+			new PedPerson("fam2", "other", "0", "0", Sex.FEMALE, Disease.UNKNOWN)
+		);
+		this.pedFileContents = new PedFileContents(List.of(), individuals);
 	}
 
 	@Test

@@ -1,34 +1,34 @@
 package org.monarchinitiative.gregor.mendel;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.monarchinitiative.gregor.pedigree.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class InheritanceCheckerMTSmallTest extends MendelianCompatibilityCheckerTestBase {
 
 	private MendelianInheritanceChecker checker;
 	private List<GenotypeCalls> gcList;
-	private ImmutableMap<ModeOfInheritance, ImmutableList<GenotypeCalls>> result;
+	private Map<ModeOfInheritance, List<GenotypeCalls>> result;
 
 	private Pedigree inconsistentMTpedigree;
 
 	@BeforeEach
 	public void setUp() throws Exception {
-		ImmutableList.Builder<PedPerson> individuals = new ImmutableList.Builder<PedPerson>();
+		List<PedPerson> individuals = new ArrayList<PedPerson>();
 		individuals.add(new PedPerson("ped", "I.1", "0", "0", Sex.MALE, Disease.UNAFFECTED)); // father
 		individuals.add(new PedPerson("ped", "I.2", "0", "0", Sex.FEMALE, Disease.AFFECTED)); // mother
 		individuals.add(new PedPerson("ped", "II.1", "I.1", "I.2", Sex.MALE, Disease.AFFECTED)); // son
 		individuals.add(new PedPerson("ped", "II.2", "I.1", "I.2", Sex.FEMALE, Disease.AFFECTED)); // daughter
-		PedFileContents pedFileContents = new PedFileContents(new ImmutableList.Builder<String>().build(),
-			individuals.build());
+		PedFileContents pedFileContents = new PedFileContents(new ArrayList<String>(),
+			individuals);
 		this.pedigree = new Pedigree(pedFileContents, "ped");
 
-		this.names = ImmutableList.of("I.1", "I.2", "II.1", "II.2");
+		this.names = List.of("I.1", "I.2", "II.1", "II.2");
 
 		this.checker = new MendelianInheritanceChecker(this.pedigree);
 
@@ -38,13 +38,13 @@ public class InheritanceCheckerMTSmallTest extends MendelianCompatibilityChecker
 		 * same as above but father is transmitting mitochrondrial mutation, which is
 		 * impossible
 		 */
-		ImmutableList.Builder<PedPerson> individuals2 = new ImmutableList.Builder<PedPerson>();
+		List<PedPerson> individuals2 = new ArrayList<PedPerson>();
 		individuals2.add(new PedPerson("ped2", "I.1", "0", "0", Sex.MALE, Disease.AFFECTED)); // father
 		individuals2.add(new PedPerson("ped2", "I.2", "0", "0", Sex.FEMALE, Disease.UNAFFECTED)); // mother
 		individuals2.add(new PedPerson("ped2", "II.1", "I.1", "I.2", Sex.MALE, Disease.AFFECTED)); // son
 		individuals2.add(new PedPerson("ped2", "II.2", "I.1", "I.2", Sex.FEMALE, Disease.AFFECTED)); // daughter
-		PedFileContents pedFileContents2 = new PedFileContents(new ImmutableList.Builder<String>().build(),
-			individuals2.build());
+		PedFileContents pedFileContents2 = new PedFileContents(new ArrayList<String>(),
+			individuals2);
 		this.inconsistentMTpedigree = new Pedigree(pedFileContents2, "ped2");
 	}
 

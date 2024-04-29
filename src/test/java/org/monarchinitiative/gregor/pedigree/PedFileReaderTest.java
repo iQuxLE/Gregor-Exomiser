@@ -1,6 +1,5 @@
 package org.monarchinitiative.gregor.pedigree;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 public class PedFileReaderTest {
 
@@ -70,12 +70,13 @@ public class PedFileReaderTest {
 
 		Assertions.assertEquals(pedFileContents.getExtraColumnHeaders().size(), 0);
 
-		ImmutableList.Builder<PedPerson> individuals = new ImmutableList.Builder<PedPerson>();
-		individuals.add(new PedPerson("fam", "father", "0", "0", Sex.MALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "mother", "0", "0", Sex.FEMALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "son", "father", "mother", Sex.MALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "daughter", "father", "mother", Sex.FEMALE, Disease.UNKNOWN));
-		Assertions.assertEquals(pedFileContents.getIndividuals(), individuals.build());
+		List<PedPerson> individuals = List.of(
+			new PedPerson("fam", "father", "0", "0", Sex.MALE, Disease.UNKNOWN),
+			new PedPerson("fam", "mother", "0", "0", Sex.FEMALE, Disease.UNKNOWN),
+			new PedPerson("fam", "son", "father", "mother", Sex.MALE, Disease.UNKNOWN),
+			new PedPerson("fam", "daughter", "father", "mother", Sex.FEMALE, Disease.UNKNOWN)
+			);
+		Assertions.assertEquals(pedFileContents.getIndividuals(), individuals);
 	}
 
 	@Test
@@ -85,12 +86,13 @@ public class PedFileReaderTest {
 
 		Assertions.assertEquals(pedFileContents.getExtraColumnHeaders().size(), 0);
 
-		ImmutableList.Builder<PedPerson> individuals = new ImmutableList.Builder<PedPerson>();
-		individuals.add(new PedPerson("fam", "father", "0", "0", Sex.MALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "mother", "0", "0", Sex.FEMALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "son", "father", "mother", Sex.MALE, Disease.UNKNOWN));
-		individuals.add(new PedPerson("fam", "daughter", "father", "mother", Sex.FEMALE, Disease.UNKNOWN));
-		Assertions.assertEquals(pedFileContents.getIndividuals(), individuals.build());
+		List<PedPerson> individuals = List.of(
+			new PedPerson("fam", "father", "0", "0", Sex.MALE, Disease.UNKNOWN),
+			new PedPerson("fam", "mother", "0", "0", Sex.FEMALE, Disease.UNKNOWN),
+			new PedPerson("fam", "son", "father", "mother", Sex.MALE, Disease.UNKNOWN),
+			new PedPerson("fam", "daughter", "father", "mother", Sex.FEMALE, Disease.UNKNOWN)
+			);
+		Assertions.assertEquals(pedFileContents.getIndividuals(), individuals);
 	}
 
 }
