@@ -2,6 +2,8 @@ package org.monarchinitiative.gregor.pedigree;
 
 import org.monarchinitiative.gregor.mendel.GregorException;
 
+import java.io.Serial;
+
 /**
  * Exception that occurs during parsing of PEDfiles.
  *
@@ -9,7 +11,8 @@ import org.monarchinitiative.gregor.mendel.GregorException;
  */
 public class PedParseException extends GregorException {
 
-	public static final long serialVersionUID = 2L;
+	@Serial
+	private static final long serialVersionUID = 2L;
 
 	public PedParseException() {
 		super();

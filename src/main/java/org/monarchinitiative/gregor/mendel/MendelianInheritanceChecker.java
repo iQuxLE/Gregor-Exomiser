@@ -16,15 +16,11 @@ public final class MendelianInheritanceChecker {
 	/**
 	 * Pedigree to use for mendelian inheritance checking
 	 */
-	final private Pedigree pedigree;
-	/**
-	 * Helper for querying a pedigree
-	 */
-	final private PedigreeQueryDecorator queryPed;
-	/**
+	private final Pedigree pedigree;
+    /**
 	 * Mendelian compatibility checker for each sub mode of inheritance
 	 */
-	final private Map<SubModeOfInheritance, AbstractMendelianChecker> checkers;
+	private final Map<SubModeOfInheritance, AbstractMendelianChecker> checkers;
 
 	/**
 	 * Construct checker with the pedigree to use
@@ -33,9 +29,8 @@ public final class MendelianInheritanceChecker {
 	 */
 	public MendelianInheritanceChecker(Pedigree pedigree) {
 		this.pedigree = pedigree;
-		this.queryPed = new PedigreeQueryDecorator(pedigree);
 
-		Map<SubModeOfInheritance, AbstractMendelianChecker> map = new LinkedHashMap<>();
+		Map<SubModeOfInheritance, AbstractMendelianChecker> map = new EnumMap<>(SubModeOfInheritance.class);
 		map.put(SubModeOfInheritance.AUTOSOMAL_DOMINANT, new MendelianCheckerAD(this));
 		map.put(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_COMP_HET, new MendelianCheckerARCompoundHet(this));
 		map.put(SubModeOfInheritance.AUTOSOMAL_RECESSIVE_HOM_ALT, new MendelianCheckerARHom(this));
@@ -169,7 +164,7 @@ public final class MendelianInheritanceChecker {
 	public List<GenotypeCalls> filterCompatibleRecordsSub(Collection<GenotypeCalls> calls,
 																   SubModeOfInheritance subMode) throws IncompatiblePedigreeException {
 		// Check for compatibility of calls with pedigree
-		if (!calls.stream().allMatch(c -> isCompatibleWithPedigree(c)))
+		if (!calls.stream().allMatch(this::isCompatibleWithPedigree))
 			throw new IncompatiblePedigreeException("GenotypeCalls not compatible with pedigree");
 		// Filter down to the compatible records
 		if (subMode == SubModeOfInheritance.ANY)
@@ -189,7 +184,9 @@ public final class MendelianInheritanceChecker {
 	 * @return <code>true</code> if <code>call</code> is compatible with this pedigree
 	 */
 	private boolean isCompatibleWithPedigree(GenotypeCalls calls) {
-		return pedigree.getNames().containsAll(calls.getSampleNames());
+		// The time complexity of this method call was O(n·m), where n is the number of elements in the list on which the method is called, and m is the number of elements in the collection passed to the method as a parameter. When the list is large, this can be an expensive operation.
+		//The quick-fix wraps the list in new java.util.HashSet<>() since the time required to create java.util.HashSet from java.util.List and execute containsAll() on java.util.HashSet is O(n+m).
+		return new HashSet<>(pedigree.getNames()).containsAll(calls.getSampleNames());
 	}
 
 }

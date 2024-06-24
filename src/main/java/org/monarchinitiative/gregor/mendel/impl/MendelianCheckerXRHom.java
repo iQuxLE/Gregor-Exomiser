@@ -59,10 +59,7 @@ public class MendelianCheckerXRHom extends AbstractMendelianChecker {
 			return false; // no calls!
 		if (calls.getGenotypeBySampleNo(0).isHomAlt())
 			return true;
-		else if (pedigree.getMembers().get(0).getSex() != Sex.FEMALE && calls.getGenotypeBySampleNo(0).isHet())
-			return true;
-		else
-			return false;
+		else return pedigree.getMembers().get(0).getSex() != Sex.FEMALE && calls.getGenotypeBySampleNo(0).isHet();
 	}
 
 	/**
@@ -107,9 +104,7 @@ public class MendelianCheckerXRHom extends AbstractMendelianChecker {
 	 * know the specific parents of one affected (only all of them) at this part we
 	 * have to skip the parents of male affected.
 	 *
-	 * @param calls
-	 * @return
-	 */
+     */
 	private boolean parentsAreCompatible(GenotypeCalls calls) {
 		Set<String> femaleParentNames = Collections.unmodifiableSet(queryDecorator.getAffectedFemaleParentNames());
 

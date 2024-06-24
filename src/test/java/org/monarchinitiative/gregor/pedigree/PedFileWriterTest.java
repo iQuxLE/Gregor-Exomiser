@@ -38,11 +38,13 @@ public class PedFileWriterTest {
 
 		String fileContents = Files.readString(tmpFile.toPath());
 
-		String expectedContents = "#PEDIGREE\tNAME\tFATHER\tMOTHER\tSEX\tDISEASE\n" +
-				"fam\tfather\t0\t0\t1\t0\n" +
-				"fam\tmother\t0\t0\t2\t0\n" +
-				"fam\tson\tfather\tmother\t1\t0\n" +
-				"fam\tdaughter\tfather\tmother\t2\t0\n";
+		String expectedContents = """
+                #PEDIGREE\tNAME\tFATHER\tMOTHER\tSEX\tDISEASE
+                fam\tfather\t0\t0\t1\t0
+                fam\tmother\t0\t0\t2\t0
+                fam\tson\tfather\tmother\t1\t0
+                fam\tdaughter\tfather\tmother\t2\t0
+                """;
 
 		Assertions.assertEquals(expectedContents, fileContents);
 	}

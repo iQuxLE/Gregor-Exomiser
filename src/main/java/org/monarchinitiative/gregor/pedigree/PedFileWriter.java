@@ -67,9 +67,9 @@ public final class PedFileWriter {
 		out.append('\t');
 		out.append(individual.getMother());
 		out.append('\t');
-		out.append("" + individual.getSex().toInt());
+		out.append("").append(String.valueOf(individual.getSex().toInt()));
 		out.append('\t');
-		out.append("" + individual.getDisease().toInt());
+		out.append("").append(String.valueOf(individual.getDisease().toInt()));
 
 		for (String field : individual.getExtraFields()) {
 			out.append('\t');

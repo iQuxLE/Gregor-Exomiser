@@ -59,10 +59,11 @@ public final class GenotypeCalls implements Iterable<Entry<String, Genotype>> {
 						 Object payload) {
 		this.chromType = chromType;
 
-		this.sampleToGenotype = new TreeMap<>();
+		Map<String, Genotype> temp = new LinkedHashMap<>();
 		for (Entry<String, Genotype> entry : sampleToGenotype){
-			this.sampleToGenotype.put(entry.getKey(), entry.getValue());
+			temp.put(entry.getKey(), entry.getValue());
 		}
+		this.sampleToGenotype = Collections.unmodifiableMap(temp);
 		this.sampleNames = List.copyOf(this.sampleToGenotype.keySet());
 		this.payload = payload;
 	}
@@ -143,6 +144,12 @@ public final class GenotypeCalls implements Iterable<Entry<String, Genotype>> {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj instanceof GenotypeCalls genotype) {
+            return chromType == genotype.chromType && sampleNames.equals(genotype.sampleNames)
+					&& payload.equals(genotype.payload);
+		}
 		if (obj == null)
 			return false;
 		// Yes, we really need object identity here

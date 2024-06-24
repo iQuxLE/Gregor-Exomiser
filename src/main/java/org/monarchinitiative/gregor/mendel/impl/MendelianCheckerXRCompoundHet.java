@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:Peter.Robinson@jax.org">Peter N Robinson</a>
  */
 public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
-
+	// TODO: TEst the non covered parts
 	/**
 	 * list of siblings for each person in {@link #pedigree}
 	 */
@@ -64,10 +64,10 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 
 	private List<GenotypeCalls> filterCompatibleRecordsMultiSample(Collection<GenotypeCalls> calls) {
 		List<GenotypeCalls> autosomalCalls = calls.stream()
-			.filter(call -> call.getChromType() == ChromosomeType.AUTOSOMAL).collect(Collectors.toList());
+			.filter(call -> call.getChromType() == ChromosomeType.AUTOSOMAL).toList();
 
 		// First, collect candidate genotype call lists from trios around affected individuals
-		ArrayList<Candidate> candidates = collectTrioCandidates(autosomalCalls);
+		List<Candidate> candidates = collectTrioCandidates(autosomalCalls);
 
 		// Then, check the candidates for all trios around affected individuals
 		Set<GenotypeCalls> result = new HashSet<>();
@@ -75,16 +75,16 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 			if (isCompatibleWithTriosAroundAffected(c)) {
 				// If candidate holds, check all unaffected for not being homozygous alt
 				if (isCompatibleWithUnaffected(c)) {
-					result.add(c.getMaternal());
-					result.add(c.getPaternal());
+					result.add(c.maternal());
+					result.add(c.paternal());
 				}
 			}
 		}
 		return List.copyOf(result);
 	}
 
-	private ArrayList<Candidate> collectTrioCandidates(Collection<GenotypeCalls> calls) {
-		ArrayList<Candidate> result = new ArrayList<Candidate>();
+	private List<Candidate> collectTrioCandidates(Collection<GenotypeCalls> calls) {
+		List<Candidate> result = new ArrayList<Candidate>();
 
 		for (Person p : pedigree.getMembers()) {
 			if (p.getDisease() == Disease.AFFECTED && (p.getFather() != null || p.getMother() != null)) {
@@ -116,29 +116,33 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 				}
 
 				// Combine compatible paternal and maternal heterozygous variants
-				for (GenotypeCalls pat : paternal)
-					for (GenotypeCalls mat : maternal) {
-						if (pat == mat) // FIXME what means this NOW?
-							continue; // exclude if variants are identical
-						if (pat.getGenotypeForSample(p.getName()).isNotObserved()
-							&& (p.getFather() == null
-							|| pat.getGenotypeForSample(p.getFather().getName()).isNotObserved())
-							&& (p.getMother() == null
-							|| pat.getGenotypeForSample(p.getMother().getName()).isNotObserved()))
-							continue; // exclude if not observed in all from paternal
-						if (mat.getGenotypeForSample(p.getName()).isNotObserved()
-							&& (p.getFather() == null
-							|| mat.getGenotypeForSample(p.getFather().getName()).isNotObserved())
-							&& (p.getMother() == null
-							|| mat.getGenotypeForSample(p.getMother().getName()).isNotObserved()))
-							continue; // exclude if not observed in all from maternal
-						result.add(new Candidate(pat, mat));
-					}
+				findCandidate(result, p, paternal, maternal);
 
 			}
 		}
 
 		return result;
+	}
+
+	static void findCandidate(List<Candidate> result, Person p, List<GenotypeCalls> paternal, List<GenotypeCalls> maternal) {
+		for (GenotypeCalls pat : paternal)
+			for (GenotypeCalls mat : maternal) {
+				if (pat == mat) // FIXME what means this NOW?
+					continue; // exclude if variants are identical
+				if (pat.getGenotypeForSample(p.getName()).isNotObserved()
+					&& (p.getFather() == null
+					|| pat.getGenotypeForSample(p.getFather().getName()).isNotObserved())
+					&& (p.getMother() == null
+					|| pat.getGenotypeForSample(p.getMother().getName()).isNotObserved()))
+					continue; // exclude if not observed in all from paternal
+				if (mat.getGenotypeForSample(p.getName()).isNotObserved()
+					&& (p.getFather() == null
+					|| mat.getGenotypeForSample(p.getFather().getName()).isNotObserved())
+					&& (p.getMother() == null
+					|| mat.getGenotypeForSample(p.getMother().getName()).isNotObserved()))
+					continue; // exclude if not observed in all from maternal
+				result.add(new Candidate(pat, mat));
+			}
 	}
 
 	private boolean isCompatibleWithTriosAroundAffected(Candidate c) {
@@ -147,10 +151,10 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 				// we have to check this for paternal,maternal and vice versa.
 				// Paternal maternal inheritance can be different for other
 				// parents in the pedigree.
-				if (!isCompatibleWithTriosAndMaternalPaternalInheritanceAroundAffected(p, c.getPaternal(),
-					c.getMaternal()))
-					if (!isCompatibleWithTriosAndMaternalPaternalInheritanceAroundAffected(p, c.getMaternal(),
-						c.getPaternal()))
+				if (isCompatibleWithTriosAndMaternalPaternalInheritanceAroundAffected(p, c.paternal(),
+						c.maternal()))
+					if (isCompatibleWithTriosAndMaternalPaternalInheritanceAroundAffected(p, c.maternal(),
+							c.paternal()))
 						return false;
 			}
 		}
@@ -165,12 +169,12 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 		if (paternal != null) {
 			final Genotype pGT = paternal.getGenotypeForSample(p.getName());
 			if ((pGT.isHomAlt() && p.getSex() == Sex.FEMALE) || pGT.isHomRef())
-				return false;
+				return true;
 		}
 		if (maternal != null) {
 			final Genotype mGT = maternal.getGenotypeForSample(p.getName());
 			if (p.getSex() == Sex.FEMALE && (mGT.isHomAlt() && mGT.isHomRef()))
-				return false;
+				return true;
 		}
 
 		// the paternal variant may not be homozygous REF in the father of
@@ -178,7 +182,7 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 		if (paternal != null && p.getFather() != null) {
 			final Genotype pGT = paternal.getGenotypeForSample(p.getFather().getName());
 			if (pGT.isHomRef())
-				return false;
+				return true;
 		}
 
 		// the maternal variant may not be homozygous in the mother of
@@ -186,7 +190,7 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 		if (maternal != null && p.getMother() != null) {
 			final Genotype mGT = maternal.getGenotypeForSample(p.getMother().getName());
 			if (mGT.isHomAlt() || mGT.isHomRef())
-				return false;
+				return true;
 		}
 
 		// none of the unaffected siblings may have the same genotypes
@@ -194,12 +198,14 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 		if (siblings != null && !siblings.isEmpty() && siblings.containsKey(p))
 			for (Person sibling : siblings.get(p))
 				if (sibling.getDisease() == Disease.UNAFFECTED) {
-					final Genotype pGT = paternal.getGenotypeForSample(sibling.getName());
-					final Genotype mGT = maternal.getGenotypeForSample(sibling.getName());
+                    assert paternal != null;
+                    final Genotype pGT = paternal.getGenotypeForSample(sibling.getName());
+                    assert maternal != null;
+                    final Genotype mGT = maternal.getGenotypeForSample(sibling.getName());
 					if (pGT.isHet() && mGT.isHet())
-						return false;
+						return true;
 				}
-		return true;
+		return false;
 	}
 
 	private boolean isCompatibleWithUnaffected(Candidate c) {
@@ -208,15 +214,15 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 				boolean patHet = false;
 				boolean matHet = false;
 				// None of the genotypes from the paternal or maternal call lists may be homozygous in the index
-				if (c.getPaternal() != null) {
-					final Genotype pGT = c.getPaternal().getGenotypeForSample(p.getName());
+				if (c.paternal() != null) {
+					final Genotype pGT = c.paternal().getGenotypeForSample(p.getName());
 					if (pGT.isHomAlt() || (p.getSex() == Sex.MALE && pGT.isHet()))
 						return false;
 					if (pGT.isHet())
 						patHet = true;
 				}
-				if (c.getMaternal() != null) {
-					final Genotype mGT = c.getMaternal().getGenotypeForSample(p.getName());
+				if (c.maternal() != null) {
+					final Genotype mGT = c.maternal().getGenotypeForSample(p.getName());
 					if (mGT.isHomAlt() || (p.getSex() == Sex.MALE && mGT.isHet()))
 						return false;
 					if (mGT.isHet())
@@ -225,12 +231,12 @@ public class MendelianCheckerXRCompoundHet extends AbstractMendelianChecker {
 
 				// If mat and pat variant are heterozygous in an unaffected, check if they are on the same allele or not
 				if (patHet && matHet) {
-					if (c.getPaternal() != null && p.getFather() != null && c.getMaternal() != null
+					if (c.paternal() != null && p.getFather() != null && c.maternal() != null
 						&& p.getMother() != null) {
-						final Genotype ppGT = c.getPaternal().getGenotypeForSample(p.getFather().getName());
-						final Genotype mpGT = c.getPaternal().getGenotypeForSample(p.getMother().getName());
-						final Genotype pmGT = c.getMaternal().getGenotypeForSample(p.getFather().getName());
-						final Genotype mmGT = c.getMaternal().getGenotypeForSample(p.getMother().getName());
+						final Genotype ppGT = c.paternal().getGenotypeForSample(p.getFather().getName());
+						final Genotype mpGT = c.paternal().getGenotypeForSample(p.getMother().getName());
+						final Genotype pmGT = c.maternal().getGenotypeForSample(p.getFather().getName());
+						final Genotype mmGT = c.maternal().getGenotypeForSample(p.getMother().getName());
 						// way one (paternal and maternal can now be switched
 						// around!
 						if (ppGT.isHet() && mpGT.isHomRef() && pmGT.isHomRef() && mmGT.isHet())

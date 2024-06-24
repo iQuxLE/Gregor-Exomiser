@@ -10,37 +10,27 @@ import org.monarchinitiative.gregor.mendel.GenotypeCalls;
  * were found in one trio. Subsequent code will determine whether the candidate pair is compatible with AR compoound-het
  * inheritance across the entire pedigree.
  *
+ * @param paternal one VCF record compatible with mutation in father
+ * @param maternal one VCF record compatible with mutation in mother
  * @author <a href="mailto:manuel.holtgrewe@charite.de">Manuel Holtgrewe</a>
  * @author <a href="mailto:Peter.Robinson@jax.org">Peter N Robinson</a>
  * @author <a href="mailto:max.schubach@charite.de">Max Schubach</a>
  */
-class Candidate {
-
-	/**
-	 * one VCF record compatible with mutation in father
-	 */
-	private final GenotypeCalls paternal;
-	/**
-	 * one VCF record compatible with mutation in mother
-	 */
-	private final GenotypeCalls maternal;
-
-	public Candidate(GenotypeCalls paternal, GenotypeCalls maternal) {
-		this.paternal = paternal;
-		this.maternal = maternal;
-	}
+record Candidate(GenotypeCalls paternal, GenotypeCalls maternal) {
 
 	/**
 	 * @return one VCF record compatible with mutation in father
 	 */
-	public GenotypeCalls getPaternal() {
+	@Override
+	public GenotypeCalls paternal() {
 		return paternal;
 	}
 
 	/**
 	 * @return one VCF record compatible with mutation in mother
 	 */
-	public GenotypeCalls getMaternal() {
+	@Override
+	public GenotypeCalls maternal() {
 		return maternal;
 	}
 

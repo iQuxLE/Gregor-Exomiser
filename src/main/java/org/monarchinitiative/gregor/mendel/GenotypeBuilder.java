@@ -1,6 +1,7 @@
 package org.monarchinitiative.gregor.mendel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Helper class for building {@link Genotype} objects
@@ -12,7 +13,7 @@ public class GenotypeBuilder {
 	/**
 	 * Allele numbers
 	 */
-	private final ArrayList<Integer> alleleNumbers;
+	private final List<Integer> alleleNumbers;
 
 	public GenotypeBuilder() {
 		this.alleleNumbers = new ArrayList<>();
@@ -22,7 +23,7 @@ public class GenotypeBuilder {
 		return new Genotype(alleleNumbers);
 	}
 
-	public ArrayList<Integer> getAlleleNumbers() {
+	public List<Integer> getAlleleNumbers() {
 		return alleleNumbers;
 	}
 

@@ -1,5 +1,7 @@
 package org.monarchinitiative.gregor.mendel;
 
+import java.io.Serial;
+
 /**
  * Thrown when the pedigree does not fit to the {@link GenotypeCalls}
  *
@@ -7,6 +9,7 @@ package org.monarchinitiative.gregor.mendel;
  */
 public class IncompatiblePedigreeException extends GregorException {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public IncompatiblePedigreeException(String msg, Throwable cause) {

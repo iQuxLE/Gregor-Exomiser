@@ -57,48 +57,30 @@ public enum SubModeOfInheritance {
 	 * @return shortcut for the ModeOfInheritance
 	 */
 	public String getAbbreviation() {
-		switch (this) {
-			case AUTOSOMAL_DOMINANT:
-				return "AD";
-			case AUTOSOMAL_RECESSIVE_COMP_HET:
-				return "AR_COMP_HET";
-			case AUTOSOMAL_RECESSIVE_HOM_ALT:
-				return "AR_HOM_ALT";
-			case X_DOMINANT:
-				return "XD";
-			case X_RECESSIVE_COMP_HET:
-				return "XR_COMP_HET";
-			case X_RECESSIVE_HOM_ALT:
-				return "XR_HOM_ALT";
-			case MITOCHONDRIAL:
-				return "MT";
-			case ANY:
-			default:
-				return null;
-		}
+        return switch (this) {
+            case AUTOSOMAL_DOMINANT -> "AD";
+            case AUTOSOMAL_RECESSIVE_COMP_HET -> "AR_COMP_HET";
+            case AUTOSOMAL_RECESSIVE_HOM_ALT -> "AR_HOM_ALT";
+            case X_DOMINANT -> "XD";
+            case X_RECESSIVE_COMP_HET -> "XR_COMP_HET";
+            case X_RECESSIVE_HOM_ALT -> "XR_HOM_ALT";
+            case MITOCHONDRIAL -> "MT";
+            default -> null;
+        };
 	}
 
 	/**
 	 * @return coarsened value from {@link ModeOfInheritance}
 	 */
 	public ModeOfInheritance toModeOfInheritance() {
-		switch (this) {
-			case AUTOSOMAL_DOMINANT:
-				return ModeOfInheritance.AUTOSOMAL_DOMINANT;
-			case AUTOSOMAL_RECESSIVE_COMP_HET:
-			case AUTOSOMAL_RECESSIVE_HOM_ALT:
-				return ModeOfInheritance.AUTOSOMAL_RECESSIVE;
-			case X_DOMINANT:
-				return ModeOfInheritance.X_DOMINANT;
-			case X_RECESSIVE_COMP_HET:
-			case X_RECESSIVE_HOM_ALT:
-				return ModeOfInheritance.X_RECESSIVE;
-			case MITOCHONDRIAL:
-				return ModeOfInheritance.MITOCHONDRIAL;
-			case ANY:
-			default:
-				return ModeOfInheritance.ANY;
-		}
+        return switch (this) {
+            case AUTOSOMAL_DOMINANT -> ModeOfInheritance.AUTOSOMAL_DOMINANT;
+            case AUTOSOMAL_RECESSIVE_COMP_HET, AUTOSOMAL_RECESSIVE_HOM_ALT -> ModeOfInheritance.AUTOSOMAL_RECESSIVE;
+            case X_DOMINANT -> ModeOfInheritance.X_DOMINANT;
+            case X_RECESSIVE_COMP_HET, X_RECESSIVE_HOM_ALT -> ModeOfInheritance.X_RECESSIVE;
+            case MITOCHONDRIAL -> ModeOfInheritance.MITOCHONDRIAL;
+            default -> ModeOfInheritance.ANY;
+        };
 	}
 
 }

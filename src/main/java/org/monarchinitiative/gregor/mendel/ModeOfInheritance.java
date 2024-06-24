@@ -49,34 +49,24 @@ public enum ModeOfInheritance {
 	 * @return <code>true</code> if is recessive MOI
 	 */
 	public boolean isDominant() {
-		switch (this) {
-			case AUTOSOMAL_DOMINANT:
-			case X_DOMINANT:
-				return true;
-			default:
-				return false;
-		}
+        return switch (this) {
+            case AUTOSOMAL_DOMINANT, X_DOMINANT -> true;
+            default -> false;
+        };
 	}
 
 	/**
 	 * @return two-letter shortcut for the ModeOfInheritance
 	 */
 	public String getAbbreviation() {
-		switch (this) {
-			case AUTOSOMAL_DOMINANT:
-				return "AD";
-			case AUTOSOMAL_RECESSIVE:
-				return "AR";
-			case X_DOMINANT:
-				return "XD";
-			case X_RECESSIVE:
-				return "XR";
-			case MITOCHONDRIAL:
-				return "MT";
-			case ANY:
-			default:
-				return null;
-		}
+        return switch (this) {
+            case AUTOSOMAL_DOMINANT -> "AD";
+            case AUTOSOMAL_RECESSIVE -> "AR";
+            case X_DOMINANT -> "XD";
+            case X_RECESSIVE -> "XR";
+            case MITOCHONDRIAL -> "MT";
+            default -> null;
+        };
 	}
 
 }

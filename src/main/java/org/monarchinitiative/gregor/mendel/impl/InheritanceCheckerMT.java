@@ -87,8 +87,8 @@ public class InheritanceCheckerMT extends AbstractMendelianChecker {
 		int numHetOrHomAlt = 0;
 
 		for (Pedigree.IndexedPerson entry : pedigree.getNameToMember().values()) {
-			if (entry.getPerson().getDisease() == Disease.AFFECTED) {
-				final Genotype gt = calls.getGenotypeForSample(entry.getPerson().getName());
+			if (entry.person().getDisease() == Disease.AFFECTED) {
+				final Genotype gt = calls.getGenotypeForSample(entry.person().getName());
 				if (gt.isHomRef())
 					return false;
 				else if (gt.isHomAlt() || gt.isHet())

@@ -220,8 +220,7 @@ public class Genotype {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
-		if (!(o instanceof Genotype)) return false;
-		Genotype genotype = (Genotype) o;
-		return Arrays.equals(alleleNumbers, genotype.alleleNumbers);
+		if (!(o instanceof Genotype genotype)) return false;
+        return Arrays.equals(alleleNumbers, genotype.alleleNumbers);
 	}
 }

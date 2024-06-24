@@ -1,5 +1,8 @@
 package org.monarchinitiative.gregor.mendel;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -16,7 +19,7 @@ public class GenotypeCallsBuilder {
 	/**
 	 * Mapping from sample name to {@link Genotype}
 	 */
-	private TreeMap<String, Genotype> sampleToGenotype;
+	private Map<String, Genotype> sampleToGenotype;
 	/**
 	 * A payload object for later easier reidentification
 	 */
@@ -24,6 +27,7 @@ public class GenotypeCallsBuilder {
 
 	public GenotypeCallsBuilder() {
 		this.chromType = null;
+		// TODO: Does this have to be a TreeMap or does LinkedHAshMap makes sense?
 		this.sampleToGenotype = new TreeMap<>();
 		this.payload = null;
 	}
@@ -40,10 +44,15 @@ public class GenotypeCallsBuilder {
 		this.chromType = chromType;
 	}
 
-	public TreeMap<String, Genotype> getSampleToGenotype() {
+	public Map<String, Genotype> getSampleToGenotype() {
 		return sampleToGenotype;
 	}
 
+	// TODO: add or put method// builder.setChromType(ChromosomeType.AUTOSOMAL);
+	// builder stays mutable,  GenotypeCalls not
+
+
+	// TODO sampleToGenotype maybe needs LinkedHAshMap --> Try with Tree, HashMap and LinkedHashMap in Tests
 	public void setSampleToGenotype(TreeMap<String, Genotype> sampleToGenotype) {
 		this.sampleToGenotype = sampleToGenotype;
 	}

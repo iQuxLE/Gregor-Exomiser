@@ -59,7 +59,7 @@ public final class PedFileReader {
 		List<PedPerson> individuals = new ArrayList<PedPerson>();
 		while (line != null) {
 			line = line.trim(); // trim leading and trailing whitespace
-			if (line.length() != 0) // ignore empty lines
+			if (!line.isEmpty()) // ignore empty lines
 				individuals.add(readIndividual(line));
 
 			line = in.readLine(); // read next

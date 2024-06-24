@@ -9,27 +9,23 @@ import java.util.stream.Stream;
 /**
  * Decorator of {@link Pedigree} that allows for the easy querying.
  *
+ * @param pedigree the pedigree
  * @author <a href="mailto:manuel.holtgrewe@charite.de">Manuel Holtgrewe</a>
  * @author <a href="mailto:Peter.Robinson@jax.org">Peter N Robinson</a>
  */
-public class PedigreeQueryDecorator {
-
-	/**
-	 * the pedigree
-	 */
-	private final Pedigree pedigree;
-
+public record PedigreeQueryDecorator(Pedigree pedigree) {
+	// TODO: maybe into Pedigree? (Pedigree.getUNaffectNAmes() ...
 	/**
 	 * Initialize decorator.
 	 */
-	public PedigreeQueryDecorator(Pedigree pedigree) {
-		this.pedigree = pedigree;
+	public PedigreeQueryDecorator {
 	}
 
 	/**
 	 * @return the decorated pedigree
 	 */
-	public Pedigree getPedigree() {
+	@Override
+	public Pedigree pedigree() {
 		return pedigree;
 	}
 
@@ -177,7 +173,8 @@ public class PedigreeQueryDecorator {
 			map.put(p1, Collections.unmodifiableList(listBuilder));
 		}
 
-;		return Collections.unmodifiableMap(map);
+		;
+		return Collections.unmodifiableMap(map);
 	}
 
 }

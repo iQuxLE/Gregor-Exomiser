@@ -214,9 +214,7 @@ public final class Person {
 				return false;
 		} else if (!name.equals(other.name))
 			return false;
-		if (sex != other.sex)
-			return false;
-		return true;
-	}
+        return sex == other.sex;
+    }
 
 }

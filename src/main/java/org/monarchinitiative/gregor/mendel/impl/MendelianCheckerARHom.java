@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Helper class for checking a {@link Collection} of {@link GenotypeCalls} for compatibility with a {@link Pedigree} and
@@ -71,8 +69,8 @@ public class MendelianCheckerARHom extends AbstractMendelianChecker {
 		int numHomozygousAlt = 0;
 
 		for (Pedigree.IndexedPerson entry : pedigree.getNameToMember().values()) {
-			if (entry.getPerson().getDisease() == Disease.AFFECTED) {
-				final Genotype gt = calls.getGenotypeForSample(entry.getPerson().getName());
+			if (entry.person().getDisease() == Disease.AFFECTED) {
+				final Genotype gt = calls.getGenotypeForSample(entry.person().getName());
 				if (gt.isHomRef() || gt.isHet())
 					return false;
 				else if (gt.isHomAlt())
@@ -111,8 +109,8 @@ public class MendelianCheckerARHom extends AbstractMendelianChecker {
 
 	private boolean unaffectedsAreNotHomozygousAlt(GenotypeCalls calls) {
 		for (Pedigree.IndexedPerson entry : pedigree.getNameToMember().values())
-			if (entry.getPerson().getDisease() == Disease.UNAFFECTED
-				&& calls.getGenotypeForSample(entry.getPerson().getName()).isHomAlt())
+			if (entry.person().getDisease() == Disease.UNAFFECTED
+				&& calls.getGenotypeForSample(entry.person().getName()).isHomAlt())
 				return false;
 		return true;
 	}

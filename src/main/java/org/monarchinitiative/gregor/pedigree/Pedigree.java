@@ -93,13 +93,12 @@ public final class Pedigree {
 	 * @return <code>Pedigree</code> with the members from <code>names</code> in the given order
 	 */
 	public Pedigree subsetOfMembers(Collection<String> names) {
-		HashSet<String> nameSet = new HashSet<String>();
-		nameSet.addAll(names);
+        Set<String> nameSet = new HashSet<>(names);
 
 		ArrayList<Person> tmpMembers = new ArrayList<Person>();
 		for (String name : names)
 			if (hasPerson(name)) {
-				Person p = nameToMember.get(name).getPerson();
+				Person p = nameToMember.get(name).person();
 				Person father = nameSet.contains(p.getFather().getName()) ? p.getFather() : null;
 				Person mother = nameSet.contains(p.getMother().getName()) ? p.getMother() : null;
 
@@ -127,6 +126,7 @@ public final class Pedigree {
 	 * @return list of members, in the same order as in {@link #members}.
 	 */
 	public List<String> getNames() {
+		// TODO: create not a list every single time
 		List<String> names = new ArrayList<>();
 		for (Person p : members)
 			names.add(p.getName());
@@ -141,28 +141,23 @@ public final class Pedigree {
 	/**
 	 * Helper class, used in the name to member map.
 	 */
-	public static class IndexedPerson {
-		private final int idx;
-		private final Person person;
-
-		public IndexedPerson(int idx, Person person) {
-			this.idx = idx;
-			this.person = person;
-		}
+		public record IndexedPerson(int idx, Person person) {
 
 		/**
 		 * @return numeric index of person in pedigree
 		 */
-		public int getIdx() {
-			return idx;
-		}
+			@Override
+			public int idx() {
+				return idx;
+			}
 
-		/**
-		 * @return the wrapped {@link Person}
-		 */
-		public Person getPerson() {
-			return person;
+			/**
+			 * @return the wrapped {@link Person}
+			 */
+			@Override
+			public Person person() {
+				return person;
+			}
 		}
-	}
 
 }

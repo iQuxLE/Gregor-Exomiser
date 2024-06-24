@@ -205,5 +205,4 @@ public final class PedPerson {
 			return false;
 		return sex == other.sex;
 	}
-
 }

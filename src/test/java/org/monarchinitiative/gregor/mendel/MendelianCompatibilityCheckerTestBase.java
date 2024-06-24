@@ -14,7 +14,7 @@ import java.util.List;
  * @author <a href="mailto:max.schubach@charite.de">Max Schubach</a>
  */
 public class MendelianCompatibilityCheckerTestBase {
-
+// TODO: check
 	/**
 	 * Helper enum type for simple genotypes
 	 */
@@ -46,13 +46,10 @@ public class MendelianCompatibilityCheckerTestBase {
 	protected Pedigree pedigree;
 
 	/**
-	 * @return a {@link com.google.common.collect.ImmutableList} object.
+	 * @return a {@link List} object.
 	 */
 	protected List<SimpleGenotype> lst(SimpleGenotype... gts) {
-		List<SimpleGenotype> genotypes = new ArrayList<>();
-		for (int i = 0; i < gts.length; ++i)
-			genotypes.add(gts[i]);
-		return Collections.unmodifiableList(genotypes);
+		return List.of(gts);
 	}
 
 	protected List<GenotypeCalls> getGenotypeCallsList(List<SimpleGenotype> genotypes,

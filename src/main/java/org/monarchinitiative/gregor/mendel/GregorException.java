@@ -1,8 +1,11 @@
 package org.monarchinitiative.gregor.mendel;
 
+import java.io.Serial;
+
 public class GregorException extends Exception{
 
-    public static final long serialVersionUID = 2L;
+    @Serial
+    private static final long serialVersionUID = 2L;
 
     public GregorException(){
         super();
