@@ -49,3 +49,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # run quality checks with Qodana
+      - name: Run Qodana
+        uses: JetBrains/qodana-action@v2023.2
+        env:
+            QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+
+      - name: Upload Qodana Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: qodana-results
+          path: ${{ github.workspace }}/qodana-results
